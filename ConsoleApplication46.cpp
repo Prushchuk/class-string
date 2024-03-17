@@ -1,266 +1,155 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <cstring>
 #include <iostream>
-#include <string>
+#include <ctime>
+using namespace std;
 
-
-
-
-class Str {
+template<typename T>
+class Matrix
+{
 private:
-	char* text;
-	int size;
-
+	int rows;
+	int cols;
+	T* data;
 
 public:
-	Str() : text{ nullptr }, size{ 0 } {}
-	Str(const char* text) {
+	Matrix() : rows{ 0 }, cols{ 0 }, data{nullptr} {}
+	Matrix(int rows, int cols) : rows{ rows }, cols{ cols } {
+		data = new T[rows * cols];
+	}
+	~Matrix() {
+		delete[]data;
+	}
 
-		this->size = strlen(text);
-		this->text = new char[size + 1];
-		for (int i = 0; i < size; i++)
+	T& operator()(int row, int col) {
+		return data[row * cols + col];
+	}
+
+	void fillFromKeyboard() {
+		cout << "Enter matrix elements: " << endl;
+		for (size_t i = 0; i < rows; i++)
 		{
-			this->text[i] = text[i];
-		}
-		this->text[size] = '\0';
-	}
-	Str(const Str& str)
-	{
-		this->size = str.size;
-		this->text = new char[size + 1];
-		for (int i = 0; i < size; i++)
-		{
-			text[i] = str.text[i];
-		}
-	}
-
-
-
-
-
-	friend std::ostream& operator<<(std::ostream& out, const Str& text) {
-		out << text.text;
-		return out;
-	}
-	friend std::istream& operator>>(std::istream& in, Str& str)
-	{
-		str.clear();
-		char* tmp = new char[10000];
-		in.getline(tmp, 10000);
-		str.push_back(tmp);
-		return in;
-	}
-
-
-
-	void push_back(char c) {
-		char* tmp = new char[size + 1];
-		strncpy(tmp, text, size);
-		tmp[size] = c;
-		size++;
-		delete[] text;
-		text = tmp;
-		tmp = nullptr;
-	}
-	void append(int space, char value)
-	{
-		char* tmp = new char[size + 2];
-		strncpy(tmp, text, size);
-		char last = tmp[size - 1];
-
-
-		for (int i = space; i < size; i++)
-		{
-			tmp[i + 1] = tmp[i];
-		}
-
-
-
-		tmp[space] = value;
-		tmp[size] = last;
-		tmp[size + 1] = '\0';
-		size++;
-		delete[] text;
-		text = tmp;
-		tmp = nullptr;
-	}
-	void push_back(const char* c) {
-		int NEWsize = size + strlen(c);
-		char* tmp = new char[NEWsize + 1];
-
-		strncpy(tmp, text, size);
-		strncpy(tmp + size, c, NEWsize - size);
-
-
-		tmp[NEWsize] = '\0';
-		size = NEWsize;
-		delete[] text;
-
-
-		text = tmp;
-		tmp = nullptr;
-	}
-	void replace(int start, int end, const char* value)
-	{
-		for (int i = start; i <= end; i++)
-		{
-			text[i] = *value;
-		}
-	}
-
-	bool operator==(const Str& str)const
-	{
-		if (size != str.size)
-		{
-			return false;
-		}
-
-
-		for (int i = 0; i < size; i++)
-		{
-			if (text[i] != str.text[i])
+			for (size_t j = 0; j < cols; j++)
 			{
-				return false;
+				cin >> data[i * cols + j];
 			}
 		}
-
-		return true;
-	}
-	friend bool operator>(const Str& LeftStr, const Str& rightStr)
-	{
-		if (rightStr == LeftStr)
-		{
-			return false;
-		}
-
-		int size = LeftStr.size > rightStr.size ? rightStr.size : LeftStr.size;
-
-		int numberLeft = 0;
-		int numberRight = 0;
-
-
-		for (int i = 0; i < size; i++)
-		{
-			if (LeftStr.text[i] > rightStr.text[i])
-			{
-				numberLeft++;
-			}
-			if (LeftStr.text[i] < rightStr.text[i])
-			{
-				numberRight++;
-			}
-		}
-
-		return numberLeft > numberRight;
-
-	}
-	friend bool operator<(const Str& LeftStr, const Str& rightStr)
-	{
-		if (rightStr == LeftStr)
-		{
-			return false;
-		}
-
-		int size = LeftStr.size > rightStr.size ? rightStr.size : LeftStr.size;
-
-		int numberLeft = 0;
-		int numberRight = 0;
-
-
-		for (int i = 0; i < size; i++)
-		{
-			if (LeftStr.text[i] < rightStr.text[i])
-			{
-				numberLeft++;
-			}
-			if (LeftStr.text[i] > rightStr.text[i])
-			{
-				numberRight++;
-			}
-		}
-
-		return numberLeft > numberRight;
-
 	}
 
-	Str operator+(const Str& str) const {
-		Str result(*this);
-		result.push_back(str.text);
+	void fillRandom() {
+		srand(time(nullptr));
+		for (size_t i = 0; i < rows * cols; i++)
+		{
+			data[i] = static_cast<T>(rand() % 100);
+		}
+	}
+
+	void display() {
+		for (size_t i = 0; i < rows; i++)
+		{
+			for (size_t j = 0; j < cols; j++)
+			{
+				cout << data[i * cols + j] << " ";
+			}
+			cout << endl;
+		}
+	}
+
+	Matrix<T> operator+(const Matrix<T>& other) {
+		if (rows != other.rows || cols != other.cols)
+			return Matrix<T>();
+
+		Matrix<T> result(rows, cols);
+		for (size_t i = 0; i < rows * cols; i++)
+		{
+			result.data[i] = data[i] + other.data[i];
+		}
 		return result;
 	}
 
-	bool operator>=(const Str& str) const {
-		return !(*this < str);
-	}
+	Matrix<T> operator-(const Matrix<T>& other) {
+		if (rows != other.rows || cols != other.cols)
+			return Matrix<T>();
 
-	bool operator<=(const Str& str) const {
-		return !(*this > str);
-	}
-
-
-	Str operator+(const Str& strLeft)
-	{
-		Str result(text);
-
-		result.push_back(strLeft.text);
-
-
+		Matrix<T> result(rows, cols);
+		for (size_t i = 0; i < rows * cols; i++)
+		{
+			result.data[i] = data[i] - other.data[i];
+		}
 		return result;
 	}
 
+	Matrix<T> operator*(const Matrix<T>& other) {
+		if (cols != other.rows)
+			return Matrix<T>();
 
-	void resize(int newSize) {
-		if (newSize < size) {
-			text[newSize] = '\0';
-		}
-		else if (newSize > size) {
-			char* tmp = new char[newSize + 1];
-			strcpy(tmp, text);
-			for (int i = size; i < newSize; ++i) {
-				tmp[i] = ' ';
+		Matrix<T> result(rows, other.cols);
+		for (size_t i = 0; i < rows; i++)
+		{
+			for (size_t j = 0; j < other.cols; j++)
+			{
+				for (size_t k = 0; k < cols; k++)
+				{
+					result(i, j) += data[i * cols + k] * other.data[k * other.cols + j];
+				}
 			}
-			tmp[newSize] = '\0';
-			delete[] text;
-			text = tmp;
 		}
-		size = newSize;
+		return result;
 	}
 
-	void push_front(char c) {
-		char* tmp = new char[size + 2];
-		tmp[0] = c;
-		strcpy(tmp + 1, text);
-		tmp[size + 1] = '\0';
-		++size;
-		delete[] text;
-		text = tmp;
+	Matrix<T> operator/(const Matrix<T>& other) {
+		if (cols != other.rows)
+			return Matrix<T>();
+
+		Matrix<T> result(rows, other.cols);
+		for (size_t i = 0; i < rows; i++)
+		{
+			for (size_t j = 0; j < other.cols; j++)
+			{
+				for (size_t k = 0; k < cols; k++)
+				{
+					result(i, j) += data[i * cols + k] / other.data[k * other.cols + j];
+				}
+			}
+		}
+		return result;
 	}
 
-	void clear() {
-		delete[] text;
-		text = nullptr;
-		size = 0;
+	T findMax() {
+		T maxElement = data[0];
+		for (size_t i = 0; i < rows * cols; i++)
+		{
+			if (data[i] > maxElement)
+				maxElement = data[i];
+		}
+		return maxElement;
 	}
-	~Str() { clear(); }
+
+	T findMin() {
+		T minElement = data[0];
+		for (size_t i = 0; i < rows * cols; i++)
+		{
+			if (data[i] < minElement)
+				minElement = data[i];
+		}
+		return minElement;
+	}
 };
 
+int main()
+{
+	Matrix<int> mat1(2, 3);
+	mat1.fillRandom();
+	cout << "Matrix 1: " << endl;
+	mat1.display();
 
+	Matrix<int> mat2(2, 3);
+	mat2.fillFromKeyboard();
+	cout << "Matrix 2:" << endl;
+	mat2.display();
 
+	Matrix<int> mat3 = mat1 + mat2;
+	cout << "Matrix 1 + Matrix 2:" << endl;
+	mat3.display();
 
-
-int main() {
-
-
-	Str s1 = "ZZZ";
-	Str s2 = "AAAA";
-
-
-	std::string s12 = "ZZZ";
-	std::string s22 = "AAAA";
-
-
-	std::cout << (s1 > s2);
-	std::cout << '\n';
-	std::cout << s1 + " Hello";
-
+	cout << "Max element in Matrix 1: " << mat1.findMax() << endl;
+	cout << "Min element in Matrix 2: " << mat2.findMin() << endl;
 }

@@ -1,4 +1,6 @@
 ﻿  ConsoleApplication46.cpp
-C:\Users\User\source\repos\ConsoleApplication46\ConsoleApplication46\ConsoleApplication46.cpp(19,22): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\source\repos\ConsoleApplication46\ConsoleApplication46\ConsoleApplication46.cpp(88,15): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\source\repos\ConsoleApplication46\ConsoleApplication46\ConsoleApplication46.cpp(38,13): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\User\source\repos\ConsoleApplication46\ConsoleApplication46\ConsoleApplication46.cpp(37,7): message : while compiling class template member function 'void Matrix<int>::fillRandom(void)'
+C:\Users\User\source\repos\ConsoleApplication46\ConsoleApplication46\ConsoleApplication46.cpp(140,17): message : see the first reference to 'Matrix<int>::fillRandom' in 'main'
+C:\Users\User\source\repos\ConsoleApplication46\ConsoleApplication46\ConsoleApplication46.cpp(139,19): message : see reference to class template instantiation 'Matrix<int>' being compiled
   ConsoleApplication46.vcxproj -> C:\Users\User\source\repos\ConsoleApplication46\x64\Debug\ConsoleApplication46.exe
